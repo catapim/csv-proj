@@ -21,7 +21,7 @@ def filterFile(inputFileName,outputFileName,filterCriteriaFileName,columnToFilte
 	headers = next(read)
 
 	outfile = open(outputFileName, "w")
-	write = csv.writer(outfile, delimiter=',', quoting=csv.QUOTE_NONE)
+	write = csv.writer(outfile)
 
 	write.writerow([headers[4]])
 
@@ -36,4 +36,5 @@ def filterFile(inputFileName,outputFileName,filterCriteriaFileName,columnToFilte
                 write.writerow([row[4]])
             except Exception as e: 
                 print(e)
+
 filterFile('meteorite-landings.csv','OutputFile.csv','filterCriteria.csv',4)
