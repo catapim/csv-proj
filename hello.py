@@ -45,15 +45,15 @@ def read_original_csv():
     # print(read_csv)
 
 def read_filtered_csv():
-    read_filter = pd.read_csv('meteorite-landings.csv', usecols=['id','name'])
+    read_filter = pd.read_csv('meteorite-landings.csv', usecols=['id','name','fall','GeoLocation'])
     return read_filter
     # print(read_filter)
 
-def write_to_csv(read_file, output_file):
-    df = DataFrame(read_file)
+def write_to_csv(read_filter):
+    df = DataFrame(read_filter)
     output_file = df.to_csv('Output.csv')
 
 
 read_original_csv()
 read_filtered_csv()
-write_to_csv(read_original_csv(), read_filtered_csv())
+write_to_csv(read_filtered_csv())
