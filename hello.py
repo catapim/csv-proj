@@ -2,58 +2,43 @@ import pandas as pd
 import csv
 from pandas import DataFrame
 
-with open('meteorite-landings.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    # for row in csv_reader:
-    #     if line_count == 0:
-    #         print(f'Las columnas son: {" - ".join(row)}')
-    #         line_count +=1
-    #     else:
-    #         print(f'\t El meteoro {row[0]} de ID: {row[1]} y de tipo: {row[2]}. Recclass: {row[3]}. Masa: {row[4]}')
-    #         line_count += 1
-    # print(f'Procesed {line_count} lines.')
+ORIGINAL_FILE = 'meteorite-landings.csv'
+OUTPUT_COLUMNS = 'output.csv'
 
-
-# def filterFile(inputFileName,outputFileName,filterCriteriaFileName,columnToFilter):
-
-# 	infile = open(inputFileName, "r")
-# 	read = csv.reader(infile)
-# 	headers = next(read)
-
-# 	outfile = open(outputFileName, "w")
-# 	write = csv.writer(outfile)
-
-# 	write.writerow([headers[4]])
-
-# 	inFilterfile = open(filterCriteriaFileName, "r")
-# 	filterCriteriaList = list(csv.reader(inFilterfile))
-
-
-# 	for row in read:
-#             #print (row[4])
-#             try:
-#                 write.writerow([row[4]])
-#             except Exception as e: 
-#                 print(e)
-
-# filterFile('meteorite-landings.csv','OutputFile.csv','filterCriteria.csv',4)
+pd.options.display.max_rows=5
 
 def read_original_csv():
-    read_csv = pd.read_csv('meteorite-landings.csv')
+    read_csv = pd.read_csv(ORIGINAL_FILE)
     return read_csv
     # print(read_csv)
 
 def read_filtered_csv():
-    read_filter = pd.read_csv('meteorite-landings.csv', usecols=['id','name','fall','GeoLocation'])
+    read_filter = pd.read_csv(ORIGINAL_FILE, usecols=['name','id','nametype','fall','GeoLocation'])
     return read_filter
     # print(read_filter)
 
 def write_to_csv(read_filter):
     df = DataFrame(read_filter)
-    output_file = df.to_csv('Output.csv')
+    output_file = df.to_csv(OUTPUT_COLUMNS)
+    return output_file
+
+def return_dataframe(read_filter):
+    df = DataFrame(read_filter)
+    return df
+
+def aggregate_csv(data_frame):
+    data_frame.groupby('name').aggregate('median').to_csv('new.csv')
+
+def filter_csv(file_to_read):
+    df = pd.read_csv(ORIGINAL_FILE, sep=',')
+    df.groupby(['id'], as_index=False)
+    df_filtered=df.query('id<10')
+    df_filtered.to_csv('filtrado.csv',index=False)
+
 
 
 read_original_csv()
 read_filtered_csv()
 write_to_csv(read_filtered_csv())
+aggregate_csv(return_dataframe(read_original_csv()))
+filter_csv(ORIGINAL_FILE)
