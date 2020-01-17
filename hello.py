@@ -1,3 +1,4 @@
+import pandas as pd 
 import csv
 
 with open('meteorite-landings.csv') as csv_file:
@@ -27,7 +28,6 @@ def filterFile(inputFileName,outputFileName,filterCriteriaFileName,columnToFilte
 
 	inFilterfile = open(filterCriteriaFileName, "r")
 	filterCriteriaList = list(csv.reader(inFilterfile))
-
 
 
 	for row in read:
