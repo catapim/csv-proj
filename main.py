@@ -1,5 +1,8 @@
 import pandas as pd
 from pandas import DataFrame
+import database
+import queries
+
 
 ORIGINAL_FILE = 'records.csv'
 OUTPUT_COLUMNS = 'output.csv'
@@ -46,19 +49,16 @@ def filter_csv(file_to_read):
     df_filtered.to_csv('filtrado.csv', index=False)
 
 
-
-
-
 # def aggregate_csv(data_frame):
 #     data_frame.groupby('name').agg(axis=0, 'mean').to_csv('new.csv')
 #
 
 
-
-
-read_original_csv()
-read_to_filter()
-write_to_csv(read_to_filter())
-# aggregate_csv(return_dataframe(read_original_csv()))
-# filter_csv(ORIGINAL_FILE)
-set_master_data(read_original_csv())
+database.connection()
+database.write()
+# read_original_csv()
+# read_to_filter()
+# write_to_csv(read_to_filter())
+# # aggregate_csv(return_dataframe(read_original_csv()))
+# # filter_csv(ORIGINAL_FILE)
+# set_master_data(read_original_csv())
