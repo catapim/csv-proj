@@ -19,7 +19,7 @@ except Exception as error:
     print(error)
 
 
-# lee el original
+# lee el original...
 def read_original_csv():
     read_csv = pd.read_csv(ORIGINAL_FILE)
     return read_csv
