@@ -47,6 +47,8 @@ def set_master_data(read_csv):
 def write_all_data(read_csv):
     try:
         df = pd.DataFrame(read_csv)
+        df.columns.values[0] = 'id'
+        df['id'] = df.index + 1
         df.to_sql('all_data', con=sql_engine, schema=None, if_exists='replace', index=False)
         sql_engine.execute('''
             SELECT * FROM all_data
