@@ -26,13 +26,15 @@ def read_original_csv():
 
 
 def set_master_data(read_csv):
-    df = pd.DataFrame(read_csv)
-    main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
-    df = pd.DataFrame(main_data)
-    filtered_main_data = df.drop_duplicates(keep='last')
-    filtered = DataFrame(filtered_main_data, columns=['Region', 'Country'])
-    # filtered_main_data.to_csv('filteredmaster.csv', sep=',', index=False)
     try:
+        df = pd.DataFrame(read_csv)
+        main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
+        df = pd.DataFrame(main_data)
+        filtered_main_data = df.drop_duplicates(keep='last')
+        filtered_main_data = DataFrame(filtered_main_data, columns=['Region', 'Country']).reset_index()
+        filtered_main_data.columns.values[0] = 'ID'
+        filtered_main_data['ID'] = filtered_main_data.index + 1
+        # filtered_main_data.to_csv('filteredmaster.csv', sep=',', index=True)
         filtered_main_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
         sql_engine.execute('''
             SELECT * FROM master_country''').fetchall()
