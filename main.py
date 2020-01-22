@@ -2,12 +2,21 @@ import pandas as pd
 from pandas import DataFrame
 import database
 import queries
+import sqlalchemy as sql
 
 
 ORIGINAL_FILE = 'records.csv'
 OUTPUT_COLUMNS = 'output.csv'
 
 pd.options.display.max_rows = 200
+# conn = database.connection()
+
+try:
+    connect_string = 'mysql+pymysql://admin:1234@localhost/sales'
+    sql_engine = sql.create_engine(connect_string, echo=False)
+
+except Exception as error:
+    print(error)
 
 
 # lee el original
@@ -21,8 +30,14 @@ def set_master_data(read_csv):
     main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
     df = pd.DataFrame(main_data)
     filtered_main_data = df.drop_duplicates(keep='last')
-    filtered_main_data.to_csv('filteredmaster.csv', sep=',', index=False)
-    print (filtered_main_data)
+    filtered = DataFrame(filtered_main_data, columns=['Region', 'Country'])
+    # filtered_main_data.to_csv('filteredmaster.csv', sep=',', index=False)
+    try:
+        filtered_main_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
+        sql_engine.execute('''
+            SELECT * FROM master_country''').fetchall()
+    except Exception as error:
+        print('error: ', error)
 
 
 def read_to_filter():
@@ -54,11 +69,10 @@ def filter_csv(file_to_read):
 #
 
 
-database.connection()
 database.write()
 # read_original_csv()
 # read_to_filter()
 # write_to_csv(read_to_filter())
 # # aggregate_csv(return_dataframe(read_original_csv()))
 # # filter_csv(ORIGINAL_FILE)
-# set_master_data(read_original_csv())
+set_master_data(read_original_csv())

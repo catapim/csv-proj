@@ -9,6 +9,7 @@ FLUSH PRIVILEGES;
 SHOW GRANTS FOR 'admin';
 
 CREATE TABLE all_data (
+    id int NOT NULL AUTO_INCREMENT,
     Region CHAR(100),
     Country CHAR(100),
     ItemType CHAR(100),
@@ -22,11 +23,13 @@ CREATE TABLE all_data (
     UnitCost FLOAT,
     TotalRevenue FLOAT,
     TotalCost FLOAT,
-    TotalProfit FLOAT
+    TotalProfit FLOAT,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE master_country (
+    id int NOT NULL AUTO_INCREMENT,
     Region CHAR(100),
     Country CHAR(100),
-    ItemType CHAR(100)
+    PRIMARY KEY (id)
 );
