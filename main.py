@@ -3,7 +3,7 @@ from pandas import DataFrame
 import database
 import queries
 import sqlalchemy as sql
-
+import numpy as np
 
 ORIGINAL_FILE = 'records.csv'
 OUTPUT_FILE = 'output.csv'
@@ -13,6 +13,8 @@ AGG_FILE = 'agg.csv'
 FILTERED_TO_CSV = 'filteredtocsv.csv'
 
 pd.options.display.max_rows = 10
+
+
 
 # connection to maria db
 try:
@@ -67,10 +69,12 @@ def read_write_region_data(read_csv):
 def read_to_filter(file_to_read):
     try:
         df = pd.read_csv(file_to_read)
-        df_ = df.filter(["Order ID", "Country"])
-        df_.to_csv(FILTERED_TO_CSV, index=False)
-        # print(df_)
-        return df_
+        df__ = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
+        df__ = df__[(df__['Units Sold'].astype(int) < 10000)]
+
+        df__.to_csv(FILTERED_TO_CSV, index=False)
+        print(df__)
+        return df__
     except Exception as error:
         print('error: ', error)
 
@@ -78,12 +82,14 @@ def read_to_filter(file_to_read):
 def file_to_aggregate(file_to_read):
     try:
         data = pd.read_csv(FILTERED_TO_CSV)
-        df = pd.DataFrame(data)
-        df_ = df.agg({'Order ID' : ['mean']})
-        print('FILE TO AGG:')
-        print(df_)
-    except Exception as error:
-        print ('[file to aggregate] error: ', error)
+        df = pd.DataFrame([data], columns=['Units Sold'])
+        value = 15000
+        hola = df[(df['Units Sold'].astype(int) < 15000)]
+        # df_ = df_.agg(['mean', 'max', 'min'])
+        print(hola)
+
+    except Exception as ex:
+        print('[file to aggregate] Exception: ', ex)
 
 
 # read filtered data and write it in new csvbkn
