@@ -7,10 +7,14 @@ import sqlalchemy as sql
 
 ORIGINAL_FILE = 'records.csv'
 OUTPUT_FILE = 'output.csv'
+FILTERED_FILE = 'filtered.csv'
+FILTERED_REGION_COUNTRY = 'filtered_region_country.csv'
+AGG_FILE = 'agg.csv'
+FILTERED_TO_CSV = 'filteredtocsv.csv'
 
-pd.options.display.max_rows = 200
-# conn = database.connection()
+pd.options.display.max_rows = 10
 
+# connection to maria db
 try:
     connect_string = 'mysql+pymysql://admin:1234@localhost/sales'
     sql_engine = sql.create_engine(connect_string, echo=False)
@@ -19,31 +23,13 @@ except Exception as error:
     print(error)
 
 
-# lee el original...
+# reads and return original csv
 def read_original_csv():
     read_csv = pd.read_csv(ORIGINAL_FILE)
     return read_csv
 
-# reads original csv and gets region and country
-# it creates a new csv with the master data
-# then a table is created in a database with the data from the csv
-def set_master_data(read_csv):
-    try:
-        df = pd.DataFrame(read_csv)
-        main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
-        df = pd.DataFrame(main_data)
-        filtered_main_data = df.drop_duplicates(keep='last')
-        filtered_main_data = DataFrame(filtered_main_data, columns=['Region', 'Country']).reset_index()
-        filtered_main_data.columns.values[0] = 'ID'
-        filtered_main_data['ID'] = filtered_main_data.index + 1
-        filtered_main_data.to_csv('filteredmaster.csv', sep=',', index=False)
-        filtered_main_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
-        sql_engine.execute('''
-            SELECT * FROM master_country''').fetchall()
-    except Exception as error:
-        print('error: ', error)
 
-
+# reads original csv and writes it in maria db
 def write_all_data(read_csv):
     try:
         df = pd.DataFrame(read_csv)
@@ -57,25 +43,59 @@ def write_all_data(read_csv):
         print('write_all_data error: ', error)
 
 
+# reads original csv and gets region and country
+# it creates a new csv with the previous data
+# then a table is created in a database with the data from the csv
+def read_write_region_data(read_csv):
+    try:
+        df = pd.DataFrame(read_csv)
+        main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
+        df = pd.DataFrame(main_data)
+        region_country_data = df.drop_duplicates(keep='last')
+        region_country_data = DataFrame(region_country_data, columns=['Region', 'Country']).reset_index()
+        region_country_data.columns.values[0] = 'ID'
+        region_country_data['ID'] = region_country_data.index + 1
+        region_country_data.to_csv(FILTERED_REGION_COUNTRY, sep=',', index=False)
+        region_country_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
+        sql_engine.execute('''
+            SELECT * FROM master_country''').fetchall()
+    except Exception as error:
+        print('error: ', error)
 
-def read_to_filter():
-    read_filter = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Item Type', 'Order Priority', 'Ship Date', 'Unit Cost', 'Total Revenue'])
-    return read_filter
+
+# reads original csv and return only the cols indicated
+def read_to_filter(file_to_read):
+    try:
+        df = pd.read_csv(file_to_read)
+        df_ = df.filter(["Order ID", "Country"])
+        df_.to_csv(FILTERED_TO_CSV, index=False)
+        # print(df_)
+        return df_
+    except Exception as error:
+        print('error: ', error)
 
 
+def file_to_aggregate(file_to_read):
+    try:
+        data = pd.read_csv(FILTERED_TO_CSV)
+        df = pd.DataFrame(data)
+        df_ = df.agg({'Order ID' : ['mean']})
+        print('FILE TO AGG:')
+        print(df_)
+    except Exception as error:
+        print ('[file to aggregate] error: ', error)
+
+
+# read filtered data and write it in new csvbkn
 def write_to_csv(read_filter):
     df = DataFrame(read_filter)
     output_file = df.to_csv(OUTPUT_FILE, sep=',', index=False)
     return output_file
 
 
-def return_dataframe(read_filter):
-    df = DataFrame(read_filter)
-    return df
-
-
+# filter original csv
 def filter_csv(file_to_read):
-    df = pd.read_csv(ORIGINAL_FILE, sep=',')
+    df = file_to_read
     df.filter(items=None, like='Order Priority', regex=None, axis=None)
     df.groupby(['id'], as_index=False)
     df_filtered = df.query('id<10')
@@ -88,10 +108,13 @@ def filter_csv(file_to_read):
 
 
 database.write()
-# read_original_csv()
-# read_to_filter()
-# write_to_csv(read_to_filter())
-# # aggregate_csv(return_dataframe(read_original_csv()))
-# # filter_csv(ORIGINAL_FILE)
-set_master_data(read_original_csv())
-write_all_data(read_original_csv())
+read_original_csv()
+# write_all_data(read_original_csv())
+# read_write_region_data(read_original_csv())
+read_to_filter(ORIGINAL_FILE)
+file_to_aggregate(FILTERED_TO_CSV)
+# write_to_csv(read_to_filter(read_original_csv()))
+# aggregate_csv(return_dataframe(read_original_csv()))
+# filter_csv(ORIGINAL_FILE)
+# set_master_data(read_original_csv()) '
+print('done')
