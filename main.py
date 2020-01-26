@@ -16,6 +16,7 @@ pd.options.display.max_rows = 10
 
 
 
+
 # connection to maria db
 try:
     connect_string = 'mysql+pymysql://admin:1234@localhost/sales'
@@ -70,7 +71,7 @@ def read_to_filter(file_to_read):
     try:
         df = pd.read_csv(file_to_read)
         df__ = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
-        df__ = df__[(df__['Units Sold'].astype(int) < 10000)]
+        df__ = df__[(df__['Units Sold'].astype(int) < 5000)]
 
         df__.to_csv(FILTERED_TO_CSV, index=False)
         print(df__)
@@ -81,12 +82,11 @@ def read_to_filter(file_to_read):
 
 def file_to_aggregate(file_to_read):
     try:
-        data = pd.read_csv(FILTERED_TO_CSV)
-        df = pd.DataFrame([data], columns=['Units Sold'])
-        value = 15000
-        hola = df[(df['Units Sold'].astype(int) < 15000)]
-        # df_ = df_.agg(['mean', 'max', 'min'])
-        print(hola)
+        df = pd.read_csv(FILTERED_TO_CSV)
+        df = df.agg({'Units Sold': ['min', 'max'],
+                      "Total Revenue" : ['min', 'max']})
+        df.to_csv('test.csv')
+        print(df)
 
     except Exception as ex:
         print('[file to aggregate] Exception: ', ex)
