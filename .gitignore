@@ -3,3 +3,4 @@ venv/
 databasep.py
 venv
 /venv
+.vscode
