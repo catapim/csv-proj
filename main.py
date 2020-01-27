@@ -24,9 +24,10 @@ except Exception as error:
 
 
 # reads and return original csv
-def read_original_csv():
-    read_csv = pd.read_csv(ORIGINAL_FILE)
-    return read_csv
+def original_dataframe():
+    global df
+    df = pd.read_csv(ORIGINAL_FILE)
+    return df
 
 
 # reads original csv and writes it in maria db
@@ -67,14 +68,12 @@ def read_write_region_data(read_csv):
 def read_to_filter(file_to_read):
     try:
         df = pd.read_csv(file_to_read)
-        df__ = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
-        df__ = df__[(df__['Units Sold'].astype(int) < 5000)]
-
-        df__.to_csv(FILTERED_TO_CSV, index=False)
-        print(df__)
-        return df__
-    except Exception as error:
-        print('error: ', error)
+        df = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
+        df = df[(df['Units Sold'].astype(int) < 5000)]
+        df.to_csv(FILTERED_TO_CSV, index=False)
+        return df
+    except Exception as ex:
+        print('[read to filter]: Exception ', ex)
 
 
 def file_to_aggregate(file_to_read):
@@ -89,20 +88,20 @@ def file_to_aggregate(file_to_read):
         print('[file to aggregate] Exception: ', ex)
 
 
-# read filtered data and write it in new csvbkn
-def write_to_csv(read_filter):
-    df = DataFrame(read_filter)
-    output_file = df.to_csv(OUTPUT_FILE, sep=',', index=False)
-    return output_file
+# read filtered data and write it in new csv
+# def write_to_csv(read_filter):
+#     df = DataFrame(read_filter)
+#     output_file = df.to_csv(OUTPUT_FILE, sep=',', index=False)
+#     return output_file
 
 
 # filter original csv
-def filter_csv(file_to_read):
-    df = file_to_read
-    df.filter(items=None, like='Order Priority', regex=None, axis=None)
-    df.groupby(['id'], as_index=False)
-    df_filtered = df.query('id<10')
-    df_filtered.to_csv('filtrado.csv', index=False)
+# def filter_csv(file_to_read):
+#     df = file_to_read
+#     df.filter(items=None, like='Order Priority', regex=None, axis=None)
+#     df.groupby(['id'], as_index=False)
+#     df_filtered = df.query('id<10')
+#     df_filtered.to_csv('filtrado.csv', index=False)
 
 
 # def aggregate_csv(data_frame):
@@ -112,12 +111,12 @@ def filter_csv(file_to_read):
 
 database.write()
 read_original_csv()
-# write_all_data(read_original_csv())
-# read_write_region_data(read_original_csv())
+write_all_data(ORIGINAL_FILE)
+read_write_region_data(ORIGINAL_FILE)
 read_to_filter(ORIGINAL_FILE)
 file_to_aggregate(FILTERED_TO_CSV)
 # write_to_csv(read_to_filter(read_original_csv()))
 # aggregate_csv(return_dataframe(read_original_csv()))
 # filter_csv(ORIGINAL_FILE)
 # set_master_data(read_original_csv()) '
-print('done')
+print('Done')
