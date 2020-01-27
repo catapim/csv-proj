@@ -3,7 +3,6 @@ from pandas import DataFrame
 import database
 import queries
 import sqlalchemy as sql
-import numpy as np
 
 ORIGINAL_FILE = 'records.csv'
 OUTPUT_FILE = 'output.csv'
@@ -13,8 +12,6 @@ AGG_FILE = 'agg.csv'
 FILTERED_TO_CSV = 'filteredtocsv.csv'
 
 pd.options.display.max_rows = 10
-
-
 
 
 # connection to maria db
