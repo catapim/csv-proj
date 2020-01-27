@@ -1,7 +1,7 @@
 import pandas as pd
 from pandas import DataFrame
-# import database as db
-import databasep as db
+import database as db
+# import databasep as db
 import queries
 import sqlalchemy as sql
 
