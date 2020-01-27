@@ -83,8 +83,8 @@ def read_to_filter(file_to_read):
 def file_to_aggregate(file_to_read):
     try:
         df = pd.read_csv(FILTERED_TO_CSV)
-        df = df.agg({'Units Sold': ['min', 'max'],
-                      "Total Revenue" : ['min', 'max']})
+        df = df.agg({'Units Sold': ['min', 'max', 'mean'],
+                      "Total Revenue" : ['min', 'max', 'mean']})
         df.to_csv('test.csv')
         print(df)
 
