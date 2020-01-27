@@ -1,10 +1,11 @@
 import pandas as pd
 from pandas import DataFrame
-import database
+# import database as db
+import databasep as db
 import queries
 import sqlalchemy as sql
 
-ORIGINAL_FILE = 'records.csv'
+ORIGINAL_FILE = 'records2.csv'
 OUTPUT_FILE = 'output.csv'
 FILTERED_FILE = 'filtered.csv'
 FILTERED_REGION_COUNTRY = 'filtered_region_country.csv'
@@ -14,13 +15,7 @@ FILTERED_TO_CSV = 'filteredtocsv.csv'
 pd.options.display.max_rows = 10
 
 
-# connection to maria db
-try:
-    connect_string = 'mysql+pymysql://admin:1234@localhost/sales'
-    sql_engine = sql.create_engine(connect_string, echo=False)
-
-except Exception as error:
-    print(error)
+db_conn = db.conn()
 
 
 # reads and return original csv
@@ -36,8 +31,8 @@ def write_all_data(read_csv):
         df = pd.read_csv(read_csv)
         df.columns.values[0] = 'id'
         df['id'] = df.index + 1
-        df.to_sql('all_data', con=sql_engine, schema=None, if_exists='replace', index=False)
-        sql_engine.execute('''
+        df.to_sql('all_data', con=db_conn, schema=None, if_exists='replace', index=False)
+        db_conn.execute('''
             SELECT * FROM all_data
         ''').fetchall()
         print('write all data ok')
@@ -56,8 +51,8 @@ def read_write_region_data(read_csv):
         region_country_data.columns.values[0] = 'ID'
         region_country_data['ID'] = region_country_data.index + 1
         region_country_data.to_csv(FILTERED_REGION_COUNTRY, sep=',', index=False)
-        region_country_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
-        sql_engine.execute('''
+        region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
+        db_conn.execute('''
             SELECT * FROM master_country''').fetchall()
         print('read write region data ok')
     except Exception as ex:
