@@ -1,10 +1,5 @@
 import psycopg2
-import sql
-import os
 from sqlalchemy import create_engine
-import queries
-from mysql.connector import errorcode
-
 
 HOST = 'localhost'
 DATABASE = 'sales'
@@ -34,10 +29,10 @@ def conn():
         connect_string = 'postgres://{user}:{password}@{host}/{database}'.format(
             user=USER, password=PASSWORD, host=HOST, database=DATABASE)
         sql_engine = create_engine(connect_string, echo=False)
-        print ('connection2 = success')
+        print ('[Conn]: success')
         return sql_engine
     except Exception as ex:
-        print('[db]: ', ex)
+        print('[Conn]: ', ex)
 
 #
 # def write():

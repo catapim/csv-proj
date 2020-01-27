@@ -1,9 +1,9 @@
 import pandas as pd
 from pandas import DataFrame
+
 import database as db
+
 # import databasep as db
-import queries
-import sqlalchemy as sql
 
 ORIGINAL_FILE = 'records2.csv'
 OUTPUT_FILE = 'output.csv'
@@ -29,7 +29,7 @@ def write_all_data(read_csv):
         db_conn.execute('''
             SELECT * FROM all_data
         ''').fetchall()
-        print('write all data ok')
+        print('[Write all data] ok')
     except Exception as error:
         print('[Write_all_data] error: ', error)
 
