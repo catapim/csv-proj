@@ -1,12 +1,10 @@
 import psycopg2
 import sql
-import pymysql as pymysql
 import os
-
 from sqlalchemy import create_engine
 import queries
-import mysql.connector as mariadb
 from mysql.connector import errorcode
+
 
 HOST = 'localhost'
 DATABASE = 'sales'
@@ -27,7 +25,7 @@ def connection():
         print(connection.get_dsn_parameters(),"\n")
         return connection
     except Exception as error:
-        print("[conectando a db connection]]: {}".format(error))
+        print("[conectando a db connection]: {}".format(error))
 
 
 def conn():

@@ -11,18 +11,12 @@ FILTERED_FILE = 'filtered.csv'
 FILTERED_REGION_COUNTRY = 'filtered_region_country.csv'
 AGG_FILE = 'agg.csv'
 FILTERED_TO_CSV = 'filteredtocsv.csv'
+AGGREGATED_FILE = 'aggregated.csv'
 
 pd.options.display.max_rows = 10
 
 
 db_conn = db.conn()
-
-
-# reads and return original csv
-# def original_dataframe():
-#     global df
-#     df = pd.read_csv(ORIGINAL_FILE)
-#     return df
 
 
 # reads original csv and writes it in maria db
@@ -37,7 +31,7 @@ def write_all_data(read_csv):
         ''').fetchall()
         print('write all data ok')
     except Exception as error:
-        print('write_all_data error: ', error)
+        print('[Write_all_data] error: ', error)
 
 
 # reads original csv and gets region and country
@@ -54,7 +48,7 @@ def read_write_region_data(read_csv):
         region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
         db_conn.execute('''
             SELECT * FROM master_country''').fetchall()
-        print('read write region data ok')
+        print('[Read write region data] ok')
     except Exception as ex:
         print('[read_write_region_data]: ', ex)
 
@@ -66,11 +60,10 @@ def read_to_filter(file_to_read):
         df = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
         df = df[(df['Units Sold'].astype(int) < 5000)]
         df.to_csv(FILTERED_TO_CSV, index=False)
-        print('read to filter ok')
-
+        print('[Read to filter] Ok')
         return df
     except Exception as ex:
-        print('[read to filter]: Exception ', ex)
+        print('[Read to filter]: Exception ', ex)
 
 
 def file_to_aggregate(file_to_read):
@@ -78,11 +71,10 @@ def file_to_aggregate(file_to_read):
         df = pd.read_csv(FILTERED_TO_CSV)
         df = df.agg({'Units Sold': ['min', 'max', 'mean'],
                       "Total Revenue" : ['min', 'max', 'mean']})
-        df.to_csv('test.csv')
+        df.to_csv(AGGREGATED_FILE)
         print(df)
-
     except Exception as ex:
-        print('[file to aggregate] Exception: ', ex)
+        print('[File to aggregate] Exception: ', ex)
 
 
 # read filtered data and write it in new csv
