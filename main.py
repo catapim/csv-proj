@@ -24,22 +24,23 @@ except Exception as error:
 
 
 # reads and return original csv
-def original_dataframe():
-    global df
-    df = pd.read_csv(ORIGINAL_FILE)
-    return df
+# def original_dataframe():
+#     global df
+#     df = pd.read_csv(ORIGINAL_FILE)
+#     return df
 
 
 # reads original csv and writes it in maria db
 def write_all_data(read_csv):
     try:
-        df = pd.DataFrame(read_csv)
+        df = pd.read_csv(read_csv)
         df.columns.values[0] = 'id'
         df['id'] = df.index + 1
         df.to_sql('all_data', con=sql_engine, schema=None, if_exists='replace', index=False)
         sql_engine.execute('''
             SELECT * FROM all_data
         ''').fetchall()
+        print('write all data ok')
     except Exception as error:
         print('write_all_data error: ', error)
 
@@ -49,9 +50,7 @@ def write_all_data(read_csv):
 # then a table is created in a database with the data from the csv
 def read_write_region_data(read_csv):
     try:
-        df = pd.DataFrame(read_csv)
-        main_data = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
-        df = pd.DataFrame(main_data)
+        df = pd.read_csv(ORIGINAL_FILE, usecols=['Region', 'Country'])
         region_country_data = df.drop_duplicates(keep='last')
         region_country_data = DataFrame(region_country_data, columns=['Region', 'Country']).reset_index()
         region_country_data.columns.values[0] = 'ID'
@@ -60,8 +59,9 @@ def read_write_region_data(read_csv):
         region_country_data.to_sql('master_country', con=sql_engine, schema=None, if_exists='replace', index=False)
         sql_engine.execute('''
             SELECT * FROM master_country''').fetchall()
-    except Exception as error:
-        print('error: ', error)
+        print('read write region data ok')
+    except Exception as ex:
+        print('[read_write_region_data]: ', ex)
 
 
 # reads original csv and return only the cols indicated
@@ -71,6 +71,8 @@ def read_to_filter(file_to_read):
         df = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
         df = df[(df['Units Sold'].astype(int) < 5000)]
         df.to_csv(FILTERED_TO_CSV, index=False)
+        print('read to filter ok')
+
         return df
     except Exception as ex:
         print('[read to filter]: Exception ', ex)
@@ -109,8 +111,8 @@ def file_to_aggregate(file_to_read):
 #
 
 
-database.write()
-read_original_csv()
+# database.write()
+# read_original_csv()
 write_all_data(ORIGINAL_FILE)
 read_write_region_data(ORIGINAL_FILE)
 read_to_filter(ORIGINAL_FILE)
