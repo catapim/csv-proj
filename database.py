@@ -1,10 +1,10 @@
 import psycopg2
 from sqlalchemy import create_engine
 
-HOST = 'localhost'
+HOST = '0.0.0.0'
 DATABASE = 'sales'
-USER = 'admin'
-PORT = '3306'
+USER = 'pguser'
+PORT = '54320'
 PASSWORD = '1234'
 
 
@@ -19,19 +19,19 @@ def connection():
         )
         print(connection.get_dsn_parameters(),"\n")
         return connection
-    except Exception as error:
-        print("[conectando a db connection]: {}".format(error))
+    except psycopg2.Error as ex:
+        print("[conectando a db connection]: {}".format(ex))
 
 
 def conn():
     # connection to db
     try:
-        connect_string = 'postgres://{user}:{password}@{host}/{database}'.format(
-            user=USER, password=PASSWORD, host=HOST, database=DATABASE)
+        connect_string = 'postgres://{user}:{password}@{host}:{port}/{database}'.format(
+            user=USER, password=PASSWORD, host=HOST, database=DATABASE, port=PORT)
         sql_engine = create_engine(connect_string, echo=False)
-        print ('[Conn]: success')
+        print(connect_string)
         return sql_engine
-    except Exception as ex:
+    except psycopg2.Error as ex:
         print('[Conn]: ', ex)
 
 #

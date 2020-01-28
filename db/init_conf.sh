@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<-EOSQL
+
+    CREATE ROLE pguser with SUPERUSER PASSWORD '1234';
+    CREATE DATABASE sales;
+    ALTER ROLE pguser WITH PASSWORD '1234';
+
+EOSQL
