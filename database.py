@@ -8,19 +8,19 @@ PORT = '54320'
 PASSWORD = '1234'
 
 
-def connection():
-    try:
-        connection = psycopg2.connect (
-            user= USER,
-            password=PASSWORD,
-            host=HOST,
-            port=PORT,
-            database=DATABASE
-        )
-        print(connection.get_dsn_parameters(),"\n")
-        return connection
-    except psycopg2.Error as ex:
-        print("[conectando a db connection]: {}".format(ex))
+# def connection():
+#     try:
+#         connection = psycopg2.connect (
+#             user= USER,
+#             password=PASSWORD,
+#             host=HOST,
+#             port=PORT,
+#             database=DATABASE
+#         )
+#         print(connection.get_dsn_parameters(),"\n")
+#         return connection
+#     except psycopg2.Error as ex:
+#         print("[conectando a db connection]: {}".format(ex))
 
 
 def conn():
@@ -29,7 +29,7 @@ def conn():
         connect_string = 'postgres://{user}:{password}@{host}:{port}/{database}'.format(
             user=USER, password=PASSWORD, host=HOST, database=DATABASE, port=PORT)
         sql_engine = create_engine(connect_string, echo=False)
-        print(connect_string)
+        # print(connect_stringing)
         return sql_engine
     except psycopg2.Error as ex:
         print('[Conn]: ', ex)

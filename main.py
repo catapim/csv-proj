@@ -1,9 +1,13 @@
+import errno
+import os
+
 import pandas as pd
 from pandas import DataFrame
 import sql_statements as sql
 import database as db
 
 # import databasep as db
+
 
 ORIGINAL_FILE = 'records2.csv'
 OUTPUT_FILE = 'output.csv'
@@ -12,10 +16,9 @@ FILTERED_REGION_COUNTRY = 'filtered_region_country.csv'
 AGG_FILE = 'agg.csv'
 FILTERED_TO_CSV = 'filteredtocsv.csv'
 AGGREGATED_FILE = 'aggregated.csv'
+CSV_FOLDER = 'csv/'
 
 pd.options.display.max_rows = 10
-
-
 db_conn = db.conn()
 
 
@@ -70,13 +73,24 @@ def read_write_region_data(read_csv):
         region_country_data = DataFrame(region_country_data, columns=['Region', 'Country']).reset_index()
         region_country_data.columns.values[0] = 'ID'
         region_country_data['ID'] = region_country_data.index + 1
-        region_country_data.to_csv(FILTERED_REGION_COUNTRY, sep=',', index=False)
+        filename = CSV_FOLDER + '{}'.format(FILTERED_REGION_COUNTRY)
+        print(filename)
+        create_dir(filename)
+        region_country_data.to_csv(filename, sep=',', index=False)
         region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
         db_conn.execute('''
             SELECT * FROM master_country''').fetchall()
         print('[Read write region data] ok')
     except Exception as ex:
         print('[read_write_region_data]: ', ex)
+
+def create_dir(dir_name):
+    if not os.path.exists(os.path.dirname(dir_name)):
+        try:
+            os.makedirs(os.path.dirname(dir_name))
+        except OSError as ex:
+            if ex.errno != errno.EEXIST:
+                raise
 
 
 # reads original csv and return only the cols indicated
@@ -124,15 +138,9 @@ def file_to_aggregate(file_to_read):
 #
 
 
-# database.write()
-# read_original_csv()
 write_all_data_copy()
-# write_all_data(ORIGINAL_FILE)
-# read_write_region_data(ORIGINAL_FILE)
-# read_to_filter(ORIGINAL_FILE)
-# file_to_aggregate(FILTERED_TO_CSV)
-# write_to_csv(read_to_filter(read_original_csv()))
-# aggregate_csv(return_dataframe(read_original_csv()))
-# filter_csv(ORIGINAL_FILE)
-# set_master_data(read_original_csv()) '
+write_all_data(ORIGINAL_FILE)
+read_write_region_data(ORIGINAL_FILE)
+read_to_filter(ORIGINAL_FILE)
+file_to_aggregate(FILTERED_TO_CSV)
 print('Done')
