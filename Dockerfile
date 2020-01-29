@@ -5,4 +5,3 @@ RUN apk update \
     && apk add libpq postgresql-dev \
     && apk add build-base
 RUN pip install psycopg2-binary
-RUN pip install -r requirements.txt

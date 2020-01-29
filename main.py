@@ -1,6 +1,6 @@
 import pandas as pd
 from pandas import DataFrame
-
+import sql_statements as sql
 import database as db
 
 # import databasep as db
@@ -33,6 +33,32 @@ def write_all_data(read_csv):
     except Exception as error:
         print('[Write_all_data] error: ', error)
 
+# def write():
+#     try:
+#         conn = connection()
+#         cur = conn.cursor()
+#         cur.execute(queries.INSERT_INTO_MASTER)
+#         conn.commit()
+#         if cur.rowcount < 0:
+#             print('mal')
+#         else:
+#             print('bien')
+#     except Exception as error:
+#         print("error: {}".format(error))
+
+
+def write_all_data_copy():
+    try:
+        conn = db_conn
+        cur = conn.cursor()
+        cur.execute(sql.TEST_COPY)
+        conn.commit()
+        if cur.rowcount < 0:
+            print('mal')
+        else:
+            print('bien')
+    except Exception as ex:
+        print('[write all data copy] exception', ex)
 
 # reads original csv and gets region and country
 # it creates a new csv with the previous data
@@ -100,10 +126,11 @@ def file_to_aggregate(file_to_read):
 
 # database.write()
 # read_original_csv()
-write_all_data(ORIGINAL_FILE)
-read_write_region_data(ORIGINAL_FILE)
-read_to_filter(ORIGINAL_FILE)
-file_to_aggregate(FILTERED_TO_CSV)
+write_all_data_copy()
+# write_all_data(ORIGINAL_FILE)
+# read_write_region_data(ORIGINAL_FILE)
+# read_to_filter(ORIGINAL_FILE)
+# file_to_aggregate(FILTERED_TO_CSV)
 # write_to_csv(read_to_filter(read_original_csv()))
 # aggregate_csv(return_dataframe(read_original_csv()))
 # filter_csv(ORIGINAL_FILE)

@@ -1,15 +1,5 @@
-CREATE DATABASE sales;
-
-CREATE USER 'admin' IDENTIFIED BY '1234';
-
-GRANT USAGE ON *.* TO 'admin'@localhost IDENTIFIED BY '1234';
-
-FLUSH PRIVILEGES;
-
-SHOW GRANTS FOR 'admin';
-
 CREATE TABLE all_data (
-    id int NOT NULL AUTO_INCREMENT,
+    id serial,
     Region CHAR(100),
     Country CHAR(100),
     ItemType CHAR(100),
@@ -28,7 +18,7 @@ CREATE TABLE all_data (
 );
 
 CREATE TABLE master_country (
-    id int NOT NULL AUTO_INCREMENT,
+    id serial,
     Region CHAR(100),
     Country CHAR(100),
     PRIMARY KEY (id)
