@@ -99,7 +99,9 @@ def read_to_filter(file_to_read):
         df = pd.read_csv(file_to_read)
         df = df.filter(["Country", "Item Type", "Units Sold", "Total Revenue"])
         df = df[(df['Units Sold'].astype(int) < 5000)]
-        df.to_csv(FILTERED_TO_CSV, index=False)
+        filename = CSV_FOLDER + '{}'.format(FILTERED_TO_CSV)
+        create_dir(filename)
+        df.to_csv(filename, index=False)
         print('[Read to filter] Ok')
         return df
     except Exception as ex:
@@ -111,7 +113,9 @@ def file_to_aggregate(file_to_read):
         df = pd.read_csv(FILTERED_TO_CSV)
         df = df.agg({'Units Sold': ['min', 'max', 'mean'],
                       "Total Revenue" : ['min', 'max', 'mean']})
-        df.to_csv(AGGREGATED_FILE)
+        filename = CSV_FOLDER + '{}'.format(AGGREGATED_FILE)
+        create_dir(filename)
+        df.to_csv(filename)
         print(df)
     except Exception as ex:
         print('[File to aggregate] Exception: ', ex)
