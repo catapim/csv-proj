@@ -1,6 +1,5 @@
 import errno
 import os
-
 import pandas as pd
 from pandas import DataFrame
 import sql_statements as sql
@@ -9,7 +8,7 @@ import database as db
 # import databasep as db
 
 
-ORIGINAL_FILE = 'records2.csv'
+ORIGINAL_FILE = 'records.csv'
 OUTPUT_FILE = 'output.csv'
 FILTERED_FILE = 'filtered.csv'
 FILTERED_REGION_COUNTRY = 'filtered_region_country.csv'
@@ -26,31 +25,23 @@ db_conn = db.connection()
 def write_all_data(read_csv):
     try:
         df = pd.read_csv(read_csv)
-        df.columns.values[0] = 'id'
-        df['id'] = df.index + 1
-        df.to_sql('all_data', con=db_conn, schema=None, if_exists='replace', index=False)
-        db_conn.execute('''
-            SELECT * FROM all_data
-        ''').fetchall()
-        print('[Write all data] ok')
-    except Exception as error:
-        print('[Write_all_data] error: ', error)
-
-# def write():
-#     try:
-#         conn = connection()
-#         cur = conn.cursor()
-#         cur.execute(queries.INSERT_INTO_MASTER)
-#         conn.commit()
-#         if cur.rowcount < 0:
-#             print('mal')
-#         else:
-#             print('bien')
-#     except Exception as error:
-#         print("error: {}".format(error))
+        # df.columns.values[0] = 'id'
+        # df['id'] = df.index + 1
+        # df.to_sql('all_data', con=db_conn, schema=None, if_exists='replace', index=False)
+        conn = db_conn
+        cur = conn.cursor()
+        cur.execute(sql.WRITE_ALL_CSV_TO_DB)
+        conn.commit()
+        # if cur.rowcount <= 0:
+        #     print('[write all data] rows smaller or equal to 0')
+        # # else:
+        # #     print('[write all data] rows added bigger 0')
+    except Exception as ex:
+        print('[write all data] exception: ', ex)
 
 
-def write_all_data_copy():
+
+def write_filtered_data():
     try:
         conn = db_conn
         cur = conn.cursor()
@@ -77,20 +68,8 @@ def read_write_region_data(read_csv):
         print(filename)
         create_dir(filename)
         region_country_data.to_csv(filename, sep=',', index=False)
-        # region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
-        # db_conn.execute('''
-        #     SELECT * FROM master_country''').fetchall()
-        # print('[Read write region data] ok')
     except Exception as ex:
         print('[read_write_region_data]: ', ex)
-
-def create_dir(dir_name):
-    if not os.path.exists(os.path.dirname(dir_name)):
-        try:
-            os.makedirs(os.path.dirname(dir_name))
-        except OSError as ex:
-            if ex.errno != errno.EEXIST:
-                raise
 
 
 # reads original csv and return only the cols indicated
@@ -121,20 +100,28 @@ def file_to_aggregate(file_to_read):
         print('[File to aggregate] Exception: ', ex)
 
 
+def create_dir(dir_name):
+    if not os.path.exists(os.path.dirname(dir_name)):
+        try:
+            os.makedirs(os.path.dirname(dir_name))
+        except OSError as ex:
+            if ex.errno != errno.EEXIST:
+                raise
+
 # read filtered data and write it in new csv
-# def write_to_csv(read_filter):
-#     df = DataFrame(read_filter)
-#     output_file = df.to_csv(OUTPUT_FILE, sep=',', index=False)
-#     return output_file
+def write_to_csv(read_filter):
+    df = DataFrame(read_filter)
+    output_file = df.to_csv(OUTPUT_FILE, sep=',', index=False)
+    return output_file
 
 
 # filter original csv
-# def filter_csv(file_to_read):
-#     df = file_to_read
-#     df.filter(items=None, like='Order Priority', regex=None, axis=None)
-#     df.groupby(['id'], as_index=False)
-#     df_filtered = df.query('id<10')
-#     df_filtered.to_csv('filtrado.csv', index=False)
+def filter_csv(file_to_read):
+    df = file_to_read
+    df.filter(items=None, like='Order Priority', regex=None, axis=None)
+    df.groupby(['id'], as_index=False)
+    df_filtered = df.query('id<10')
+    df_filtered.to_csv('filtrado.csv', index=False)
 
 
 # def aggregate_csv(data_frame):
@@ -142,10 +129,9 @@ def file_to_aggregate(file_to_read):
 #
 
 
-# write_all_data(ORIGINAL_FILE)
-read_write_region_data(ORIGINAL_FILE)
+write_all_data(ORIGINAL_FILE)
+# read_write_region_data(ORIGINAL_FILE)
 # read_to_filter(ORIGINAL_FILE)
 # file_to_aggregate(FILTERED_TO_CSV)
-write_all_data_copy()
-
+# write_filtered_data()
 print('Done')

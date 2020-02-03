@@ -19,18 +19,4 @@ def connection():
         # print(connection.get_dsn_parameters(),"\n")
         return connection
     except psycopg2.Error as ex:
-        print("[conectando a db connection]: {}".format(ex))
-
-
-# def write():
-#     try:
-#         conn = connection()
-#         cur = conn.cursor()
-#         cur.execute(queries.INSERT_INTO_MASTER)
-#         conn.commit()
-#         if cur.rowcount < 0:
-#             print('mal')
-#         else:
-#             print('bien')
-#     except Exception as error:
-#         print("error: {}".format(error))
+        print("[conectando a db connection] exception:  {}".format(ex))
