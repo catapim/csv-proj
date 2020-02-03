@@ -18,7 +18,7 @@ CREATE TABLE all_data (
 );
 
 CREATE TABLE master_country (
-    id serial,
+    id integer not null,
     Region CHAR(100),
     Country CHAR(100),
     PRIMARY KEY (id)

@@ -19,7 +19,7 @@ AGGREGATED_FILE = 'aggregated.csv'
 CSV_FOLDER = 'csv/'
 
 pd.options.display.max_rows = 10
-db_conn = db.conn()
+db_conn = db.connection()
 
 
 # reads original csv and writes it in maria db
@@ -56,12 +56,12 @@ def write_all_data_copy():
         cur = conn.cursor()
         cur.execute(sql.TEST_COPY)
         conn.commit()
-        if cur.rowcount < 0:
-            print('mal')
+        if cur.rowcount <= 0:
+            print('[write all data copy] rows smaller or equal to 0')
         else:
-            print('bien')
+            print('[write all data copy] rows added bigger 0')
     except Exception as ex:
-        print('[write all data copy] exception', ex)
+        print('[write all data copy] exception: ', ex)
 
 # reads original csv and gets region and country
 # it creates a new csv with the previous data
@@ -77,10 +77,10 @@ def read_write_region_data(read_csv):
         print(filename)
         create_dir(filename)
         region_country_data.to_csv(filename, sep=',', index=False)
-        region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
-        db_conn.execute('''
-            SELECT * FROM master_country''').fetchall()
-        print('[Read write region data] ok')
+        # region_country_data.to_sql('master_country', con=db_conn, schema=None, if_exists='replace', index=False)
+        # db_conn.execute('''
+        #     SELECT * FROM master_country''').fetchall()
+        # print('[Read write region data] ok')
     except Exception as ex:
         print('[read_write_region_data]: ', ex)
 
@@ -142,9 +142,10 @@ def file_to_aggregate(file_to_read):
 #
 
 
-write_all_data_copy()
-write_all_data(ORIGINAL_FILE)
+# write_all_data(ORIGINAL_FILE)
 read_write_region_data(ORIGINAL_FILE)
-read_to_filter(ORIGINAL_FILE)
-file_to_aggregate(FILTERED_TO_CSV)
+# read_to_filter(ORIGINAL_FILE)
+# file_to_aggregate(FILTERED_TO_CSV)
+write_all_data_copy()
+
 print('Done')
